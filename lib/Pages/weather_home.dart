@@ -168,19 +168,3 @@ class _WeatherPageState extends State<WeatherPage> {
   }
 }
 
-
-//  Scaffold(
-//       body: Center(
-//         child: weather != null
-//             ? ListTile(
-//                 title: Text(weather!.tempMax.toString()),
-//               )
-//             : const Text('No weather data available'),
-//       ),
-//       floatingActionButton: FloatingActionButton(
-//         onPressed: () {
-//           queryWeather();
-//         },
-//         child: const Icon(Icons.place),
-//       ),
-//     );
