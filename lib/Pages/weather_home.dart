@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:weather/weather.dart';
 import 'package:weather_animation/weather_animation.dart';
+import 'package:weather_app/components/forecast_list.dart';
 
 class WeatherPage extends StatefulWidget {
   const WeatherPage({Key? key}) : super(key: key);
@@ -13,14 +14,17 @@ class _WeatherPageState extends State<WeatherPage> {
   final WeatherFactory wf = WeatherFactory('2873eaa636b2e3b6fd0fbcaa9917a808');
   Weather? weather;
   List<Weather>? weatherList;
-  String city = "Düsseldorf";
+  String city = "Dublin";
   final TextEditingController _controller = TextEditingController();
+  List<String> days = ["defaul", "Mo", "Tu", "We", "Th", "Fr", "Sa", "Su"];
 
   @override
   void initState() {
     super.initState();
+
     queryWeather();
     fiveDayForecast();
+
   }
 
   void _handleTextField() {
@@ -46,6 +50,8 @@ class _WeatherPageState extends State<WeatherPage> {
       setState(() {
         weatherList = currentFiveWeather;
       });
+
+      debugPrint(WeatherScene.values.toString());
     } catch (e) {
       debugPrint("Die Verbindung ist nicht verfügbar: $e");
     }
@@ -59,7 +65,8 @@ class _WeatherPageState extends State<WeatherPage> {
           SizedBox(
             height: MediaQuery.of(context).size.height,
             width: MediaQuery.of(context).size.width,
-            child: WeatherScene.sunset.getWeather(),
+            child: WeatherScene.values[1].getWeather(),
+            
           ),
           Column(
             children: [
@@ -67,7 +74,7 @@ class _WeatherPageState extends State<WeatherPage> {
                 height: 150,
               ),
               Text(
-                city.toUpperCase(),
+                "${weather?.areaName}",
                 style: const TextStyle(
                   color: Colors.white,
                   fontSize: 21,
@@ -78,23 +85,20 @@ class _WeatherPageState extends State<WeatherPage> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   Center(
-                    child: weather != null
-                        ? Text(
-                            "${weather!.tempMax.toString().substring(0, 2)}°",
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 80,
-                              fontWeight: FontWeight.normal,
-                            ),
-                          )
-                        : const Text('Wetter ist nicht verfügbar'),
-                  ),
+                      child: Text(
+                    "${weather?.tempMax.toString().substring(0, 2) ?? ""}°",
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontSize: 80,
+                      fontWeight: FontWeight.normal,
+                    ),
+                  )),
                   const SizedBox(
                     width: 10,
                   ),
-                  const Text(
-                    "Sonnig",
-                    style: TextStyle(
+                  Text(
+                    "${weather?.weatherDescription}",
+                    style: const TextStyle(
                       color: Colors.white,
                       fontSize: 21,
                       fontWeight: FontWeight.normal,
@@ -120,94 +124,62 @@ class _WeatherPageState extends State<WeatherPage> {
                     padding: const EdgeInsets.all(18.0),
                     child: Column(
                       children: [
-                        ListTile(
-                          title: const Text(
-                            "Sa",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                            ),
-                          ),
-                          leading: const Icon(
-                            Icons.sunny,
-                            color: Colors.white,
-                          ),
-                          trailing: Text(
-                            weatherList != null
-                                ? "${weatherList![0].tempMax.toString().substring(0, 4)}°"
+                        ForcastList(
+                            day: weatherList != null && weatherList!.isNotEmpty
+                                ? days[weatherList![1].date!.weekday]
                                 : '',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
-                        ListTile(
-                          title: const Text(
-                            "So",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                            ),
-                          ),
-                          leading: const Icon(
-                            Icons.sunny,
-                            color: Colors.white,
-                          ),
-                          trailing: Text(
-                            weatherList != null
-                                ? "${weatherList![1].tempMax.toString().substring(0, 4)}°"
+                            icon: weatherList![0].weatherMain == "Clouds"
+                                ? Icons.cloud
+                                : Icons.sunny,
+                            weatherList:
+                                weatherList != null && weatherList!.isNotEmpty
+                                    ? weatherList![0]
+                                        .temperature
+                                        .toString()
+                                        .substring(0, 2)
+                                    : ""),
+                        ForcastList(
+                            day: weatherList != null && weatherList!.isNotEmpty
+                                ? days[weatherList![2].date!.weekday]
                                 : '',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
-                        ListTile(
-                          title: const Text(
-                            "Mo",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                            ),
-                          ),
-                          leading: const Icon(
-                            Icons.cloud,
-                            color: Colors.white,
-                          ),
-                          trailing: Text(
-                            weatherList != null
-                                ? "${weatherList![2].tempMax.toString().substring(0, 4)}°"
+                            icon: weatherList![1].weatherMain == "Clouds"
+                                ? Icons.cloud
+                                : Icons.sunny,
+                            weatherList:
+                                weatherList != null && weatherList!.isNotEmpty
+                                    ? weatherList![1]
+                                        .tempMax
+                                        .toString()
+                                        .substring(0, 2)
+                                    : ""),
+                        ForcastList(
+                            day: weatherList != null && weatherList!.isNotEmpty
+                                ? days[weatherList![3].date!.weekday]
                                 : '',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
-                        ListTile(
-                          title: const Text(
-                            "Di",
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                            ),
-                          ),
-                          leading: const Icon(
-                            Icons.cloud,
-                            color: Colors.white,
-                          ),
-                          trailing: Text(
-                            weatherList != null
-                                ? "${weatherList![3].tempMax.toString().substring(0, 4)}°"
+                            icon: weatherList![2].weatherMain == "Clouds"
+                                ? Icons.cloud
+                                : Icons.sunny,
+                            weatherList:
+                                weatherList != null && weatherList!.isNotEmpty
+                                    ? weatherList![2]
+                                        .tempMax
+                                        .toString()
+                                        .substring(0, 2)
+                                    : ""),
+                        ForcastList(
+                            day: weatherList != null && weatherList!.isNotEmpty
+                                ? days[weatherList![4].date!.weekday]
                                 : '',
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                            ),
-                          ),
-                        ),
+                            icon: weatherList![3].weatherMain == "Clouds"
+                                ? Icons.cloud
+                                : Icons.sunny,
+                            weatherList:
+                                weatherList != null && weatherList!.isNotEmpty
+                                    ? weatherList![3]
+                                        .tempMax
+                                        .toString()
+                                        .substring(0, 2)
+                                    : ""),
                       ],
                     ),
                   ),
